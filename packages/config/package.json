@@ -1,0 +1,18 @@
+{
+  "name": "@liftivity/config",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "./tsconfig": "./tsconfig.base.json",
+    "./eslint": "./eslint.base.js"
+  },
+  "scripts": {
+    "lint": "echo 'no lint target for config package'"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.12.0",
+    "@typescript-eslint/parser": "^7.12.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  }
+}
