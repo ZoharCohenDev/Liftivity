@@ -11,7 +11,8 @@
       "Bash(pdftoppm -r 150 -png /Users/matancohen/Liftivity/Liftivity/Liftivity-mockup.pdf /tmp/mockup_page)",
       "Read(//private/tmp/**)",
       "Bash(pnpm install *)",
-      "Bash(pnpm add *)"
+      "Bash(pnpm add *)",
+      "Bash(git mv *)"
     ]
   }
 }

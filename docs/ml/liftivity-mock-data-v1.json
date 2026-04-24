@@ -1,0 +1,163 @@
+{
+  "projects": [
+    {
+      "id": "proj_001",
+      "name": "Liftivity Demo Project",
+      "url": "https://example.com",
+      "createdAt": "2026-04-22T10:00:00Z"
+    }
+  ],
+  "analyses": [
+    {
+      "analysisId": "an_001",
+      "projectId": "proj_001",
+      "status": "pending",
+      "progress": 0,
+      "stage": "queued",
+      "createdAt": "2026-04-22T10:01:00Z",
+      "updatedAt": "2026-04-22T10:01:00Z"
+    },
+    {
+      "analysisId": "an_002",
+      "projectId": "proj_001",
+      "status": "running",
+      "progress": 45,
+      "stage": "nlp_analysis",
+      "createdAt": "2026-04-22T10:05:00Z",
+      "updatedAt": "2026-04-22T10:05:45Z"
+    },
+    {
+      "analysisId": "an_003",
+      "projectId": "proj_001",
+      "status": "completed",
+      "progress": 100,
+      "stage": "completed",
+      "createdAt": "2026-04-22T10:10:00Z",
+      "updatedAt": "2026-04-22T10:10:32Z",
+      "result": {
+        "score": 82,
+        "categoryScores": {
+          "nlp": 85,
+          "performance": 74
+        },
+        "insights": [
+          "Clear value proposition above the fold.",
+          "Primary CTA is visible but could be more action-oriented.",
+          "Page load time is slower than ideal for mobile users."
+        ],
+        "details": {
+          "nlp": {
+            "clarityScore": 88,
+            "ctaDetected": true,
+            "ctaStrength": "medium",
+            "tone": "professional"
+          },
+          "performance": {
+            "loadTimeMs": 2450,
+            "ttfbMs": 620,
+            "lcpMs": 2300
+          }
+        },
+        "screenshotUrl": "https://cdn.liftivity.dev/screenshots/an_003-home.png"
+      }
+    },
+    {
+      "analysisId": "an_004",
+      "projectId": "proj_001",
+      "status": "failed",
+      "progress": 60,
+      "stage": "collector",
+      "createdAt": "2026-04-22T10:20:00Z",
+      "updatedAt": "2026-04-22T10:20:41Z",
+      "error": {
+        "code": "TIMEOUT",
+        "message": "Website took too long to respond.",
+        "retryable": true
+      }
+    },
+    {
+      "analysisId": "an_005",
+      "projectId": "proj_001",
+      "status": "completed",
+      "progress": 100,
+      "stage": "completed",
+      "createdAt": "2026-04-22T10:30:00Z",
+      "updatedAt": "2026-04-22T10:30:27Z",
+      "result": {
+        "score": 76,
+        "categoryScores": {
+          "nlp": 84,
+          "performance": 58
+        },
+        "insights": [
+          "Headline is understandable and focused.",
+          "CTA exists, but visual emphasis is weak.",
+          "Performance analysis partially failed, so score is based on available signals."
+        ],
+        "details": {
+          "nlp": {
+            "clarityScore": 84,
+            "ctaDetected": true,
+            "ctaStrength": "weak",
+            "tone": "neutral"
+          },
+          "performance": {
+            "loadTimeMs": null,
+            "ttfbMs": 710,
+            "lcpMs": null,
+            "partialFailure": true
+          }
+        },
+        "warnings": [
+          {
+            "code": "PERFORMANCE_PARTIAL_FAILURE",
+            "message": "Some performance checks did not complete successfully."
+          }
+        ],
+        "screenshotUrl": "https://cdn.liftivity.dev/screenshots/an_005-home.png"
+      }
+    }
+  ],
+  "apiExamples": {
+    "createAnalysisRequest": {
+      "projectId": "proj_001",
+      "url": "https://example.com"
+    },
+    "createAnalysisResponse": {
+      "analysisId": "an_006",
+      "status": "pending",
+      "progress": 0,
+      "stage": "queued"
+    },
+    "getAnalysisRunningResponse": {
+      "analysisId": "an_002",
+      "status": "running",
+      "progress": 45,
+      "stage": "nlp_analysis"
+    },
+    "getAnalysisCompletedResponse": {
+      "analysisId": "an_003",
+      "status": "completed",
+      "progress": 100,
+      "stage": "completed",
+      "result": {
+        "score": 82,
+        "insights": [
+          "Clear value proposition above the fold.",
+          "Primary CTA is visible but could be more action-oriented.",
+          "Page load time is slower than ideal for mobile users."
+        ]
+      }
+    },
+    "getAnalysisFailedResponse": {
+      "analysisId": "an_004",
+      "status": "failed",
+      "progress": 60,
+      "stage": "collector",
+      "error": {
+        "code": "TIMEOUT",
+        "message": "Website took too long to respond."
+      }
+    }
+  }
+}

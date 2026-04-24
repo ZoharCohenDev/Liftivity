@@ -4,12 +4,14 @@
   "private": true,
   "description": "AI-powered fitness coaching platform — monorepo root",
   "workspaces": [
-    "apps/*",
+    "frontend",
+    "backend",
+    "worker",
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm --parallel --filter './apps/*' dev",
-    "build": "pnpm --filter './packages/*' build && pnpm --filter './apps/*' build",
+    "dev": "pnpm --filter frontend dev",
+    "build": "pnpm --filter './packages/*' build && pnpm --filter frontend build",
     "lint": "pnpm --recursive lint",
     "typecheck": "pnpm --recursive typecheck",
     "test": "pnpm --recursive test"
