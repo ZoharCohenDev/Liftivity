@@ -1,0 +1,63 @@
+import React from "react";
+import { Box, Chip, Grid, Typography } from "@mui/material";
+import StatCard from "../components/common/StatCard";
+import ConversionChart from "../components/dashboard/ConversionChart";
+import IssueBreakdownChart from "../components/dashboard/IssueBreakdownChart";
+import RecentAnalysesTable from "../components/dashboard/RecentAnalysesTable";
+import { useApp } from "../context/AppContext";
+
+export default function OverviewPage() {
+  const { user } = useApp();
+
+  return (
+    <Box p={3}>
+      {/* Header */}
+      <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={3}>
+        <Box>
+          <Typography variant="h5" fontWeight={700}>Overview</Typography>
+          <Typography variant="body2" color="text.secondary">
+            Welcome back! Here is what's happening with your websites today.
+          </Typography>
+        </Box>
+        <Box textAlign="right">
+          <Typography variant="caption" color="text.secondary" display="block" letterSpacing={0.5}>
+            PLAN
+          </Typography>
+          <Typography variant="subtitle2" fontWeight={700}>{user.plan}</Typography>
+          <Typography variant="caption" color="primary.main" sx={{ cursor: "pointer" }}>
+            ↑ Access upgrades
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Stat cards */}
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard label="Average Score" value="78.4" trend="+4.2%" trendUp />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard label="Total Issues" value="114" trend="-12.8%" trendUp={false} />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard label="Conversion Lift" value="+24%" trend="+2.1%" trendUp />
+        </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <StatCard label="Active Monitors" value="12" badge="Stable" />
+        </Grid>
+      </Grid>
+
+      {/* Charts */}
+      <Grid container spacing={2} mb={3}>
+        <Grid item xs={12} md={8}>
+          <ConversionChart />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <IssueBreakdownChart />
+        </Grid>
+      </Grid>
+
+      {/* Table */}
+      <RecentAnalysesTable />
+    </Box>
+  );
+}
