@@ -62,5 +62,3 @@ coverage/
 *.suo
 *.user
 
-# ── Claude Code internal ──────────────────────────────────────────────────────
-.claude/

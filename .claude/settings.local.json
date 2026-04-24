@@ -1,18 +1,30 @@
 {
-  "permissions": {
-    "allow": [
-      "Read(//usr/local/Cellar/**)",
-      "Read(//opt/homebrew/Cellar/**)",
-      "Bash(brew install *)",
-      "Read(//usr/local/**)",
-      "Read(//opt/homebrew/**)",
-      "Bash(brew --prefix poppler)",
-      "Bash(export PATH=\"/usr/local/bin:$PATH\")",
-      "Bash(pdftoppm -r 150 -png /Users/matancohen/Liftivity/Liftivity/Liftivity-mockup.pdf /tmp/mockup_page)",
-      "Read(//private/tmp/**)",
-      "Bash(pnpm install *)",
-      "Bash(pnpm add *)",
-      "Bash(git mv *)"
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|Create",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/guard.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-edit.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|Create",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/post-edit.sh"
+          }
+        ]
+      }
     ]
   }
 }
