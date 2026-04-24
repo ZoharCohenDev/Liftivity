@@ -1,7 +1,66 @@
-.env.local
+# ── Environment ───────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Node / pnpm ───────────────────────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ── Build outputs ─────────────────────────────────────────────────────────────
+dist/
+dist-ssr/
+build/
+out/
+.next/
+*.tsbuildinfo
+
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+.coverage.*
+
+# ── Logs & temp ───────────────────────────────────────────────────────────────
+*.log
+*.pid
+*.seed
+tmp/
+temp/
+.cache/
+
+# ── Test coverage ─────────────────────────────────────────────────────────────
+coverage/
+
+# ── macOS ─────────────────────────────────────────────────────────────────────
 .DS_Store
-node_modules
-dist
-.next
-out
-*.local
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# ── Editor / IDE ──────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*.suo
+*.user
+
+# ── Claude Code internal ──────────────────────────────────────────────────────
+.claude/
