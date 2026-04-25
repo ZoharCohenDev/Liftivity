@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: liftivity
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: Liftivity123
       POSTGRES_DB: liftivity_dev
     ports:
       - "5432:5432"

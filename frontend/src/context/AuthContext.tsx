@@ -1,55 +1,73 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { User } from "@liftivity/shared-types";
+import { apiFetch, setStoredToken, clearStoredToken, getStoredToken } from "../lib/api";
 
 interface AuthCtx {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  register: (email: string, password: string, displayName: string) => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 const AuthCtx = createContext<AuthCtx>(null as unknown as AuthCtx);
-
-const AUTH_KEY = "auth_token";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // On mount: validate any stored access token against the server
   useEffect(() => {
-    // TODO: replace with GET /auth/me that validates the JWT server-side
-    const stored = localStorage.getItem(AUTH_KEY);
-    if (stored) {
-      try {
-        setUser(JSON.parse(stored) as User);
-      } catch {
-        localStorage.removeItem(AUTH_KEY);
-      }
+    if (!getStoredToken()) {
+      setIsLoading(false);
+      return;
     }
-    setIsLoading(false);
+    apiFetch<{ user: User }>("/auth/me")
+      .then(({ user: u }) => setUser(u))
+      .catch(() => clearStoredToken())
+      .finally(() => setIsLoading(false));
   }, []);
 
-  const login = async (email: string, _password: string): Promise<void> => {
-    // TODO: replace with POST /auth/login — store JWT token, not user object
-    const mockUser: User = {
-      id: crypto.randomUUID(),
-      email,
-      displayName: email.split("@")[0],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    localStorage.setItem(AUTH_KEY, JSON.stringify(mockUser));
-    setUser(mockUser);
+  // Global logout signal emitted by apiFetch when the refresh token also expires
+  useEffect(() => {
+    const onForcedLogout = () => setUser(null);
+    window.addEventListener("auth:logout", onForcedLogout);
+    return () => window.removeEventListener("auth:logout", onForcedLogout);
+  }, []);
+
+  const login = async (email: string, password: string): Promise<void> => {
+    const res = await apiFetch<{ accessToken: string; user: User }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    setStoredToken(res.accessToken);
+    setUser(res.user);
   };
 
-  const logout = () => {
-    localStorage.removeItem(AUTH_KEY);
+  const register = async (
+    email: string,
+    password: string,
+    displayName: string
+  ): Promise<void> => {
+    const res = await apiFetch<{ accessToken: string; user: User }>("/auth/register", {
+      method: "POST",
+      body: JSON.stringify({ email, password, displayName }),
+    });
+    setStoredToken(res.accessToken);
+    setUser(res.user);
+  };
+
+  const logout = async (): Promise<void> => {
+    await apiFetch("/auth/logout", { method: "POST" }).catch(() => {});
+    clearStoredToken();
     setUser(null);
   };
 
   return (
-    <AuthCtx.Provider value={{ user, isAuthenticated: user !== null, isLoading, login, logout }}>
+    <AuthCtx.Provider
+      value={{ user, isAuthenticated: user !== null, isLoading, login, register, logout }}
+    >
       {children}
     </AuthCtx.Provider>
   );

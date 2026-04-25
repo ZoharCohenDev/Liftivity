@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   AppBar,
@@ -10,62 +10,111 @@ import {
   useTheme,
 } from "@mui/material";
 import ThemeToggle from "../../../components/ThemeToggle";
+import AuthModal from "../../../components/AuthModal";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function LandingNav() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const isDark = theme.palette.mode === "dark";
 
+  const [authOpen, setAuthOpen] = useState(false);
+  const [initialTab, setInitialTab] = useState<"login" | "register">("login");
+
+  const openLogin = () => {
+    setInitialTab("login");
+    setAuthOpen(true);
+  };
+
+  const openRegister = () => {
+    setInitialTab("register");
+    setAuthOpen(true);
+  };
+
   return (
-    <AppBar
-      position="sticky"
-      elevation={0}
-      sx={{
-        bgcolor: isDark ? "rgba(11,15,30,0.9)" : "rgba(255,255,255,0.9)",
-        backdropFilter: "blur(12px)",
-        borderBottom: `1px solid ${theme.palette.divider}`,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Toolbar sx={{ px: "0 !important", gap: 4, minHeight: "64px !important" }}>
-          {/* Logo */}
-          <Box display="flex" alignItems="center" gap={1} sx={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+    <>
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{
+          bgcolor: isDark ? "rgba(11,15,30,0.9)" : "rgba(255,255,255,0.9)",
+          backdropFilter: "blur(12px)",
+          borderBottom: `1px solid ${theme.palette.divider}`,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Toolbar sx={{ px: "0 !important", gap: 4, minHeight: "64px !important" }}>
+            {/* Logo */}
             <Box
-              sx={{
-                width: 28,
-                height: 28,
-                borderRadius: 1.5,
-                background: "linear-gradient(135deg, #5B7BFF 0%, #A78BFA 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              display="flex"
+              alignItems="center"
+              gap={1}
+              sx={{ cursor: "pointer" }}
+              onClick={() => navigate("/")}
             >
-              <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 14 }}>L</Typography>
+              <Box
+                sx={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 1.5,
+                  background: "linear-gradient(135deg, #5B7BFF 0%, #A78BFA 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 14 }}>L</Typography>
+              </Box>
+              <Typography fontWeight={700} fontSize={16} color="text.primary">
+                Liftivity
+              </Typography>
             </Box>
-            <Typography fontWeight={700} fontSize={16} color="text.primary">
-              Liftivity
-            </Typography>
-          </Box>
 
-          <Box flex={1} />
+            <Box flex={1} />
 
-          <Box display="flex" alignItems="center" gap={1}>
-            <ThemeToggle />
-            <Button variant="text" size="small" sx={{ color: "text.secondary" }}>
-              Sign In
-            </Button>
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => navigate("/app/overview")}
-              sx={{ px: 2.5 }}
-            >
-              Start Free Trial
-            </Button>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
+            <Box display="flex" alignItems="center" gap={1}>
+              <ThemeToggle />
+              {isAuthenticated ? (
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={() => navigate("/app/overview")}
+                  sx={{ px: 2.5 }}
+                >
+                  Go to Dashboard
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="text"
+                    size="small"
+                    onClick={openLogin}
+                    sx={{ color: "text.secondary" }}
+                  >
+                    Sign In
+                  </Button>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={openRegister}
+                    sx={{ px: 2.5 }}
+                  >
+                    Start Free Trial
+                  </Button>
+                </>
+              )}
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+
+      <AuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onSuccess={() => navigate("/app/overview")}
+        initialTab={initialTab}
+      />
+    </>
   );
 }
