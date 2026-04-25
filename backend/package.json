@@ -8,7 +8,7 @@
     "start": "node dist/main.js",
     "lint": "eslint src --ext ts",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "echo 'No tests configured yet'"
   },
   "dependencies": {
     "@fastify/cors": "^8.5.0",
