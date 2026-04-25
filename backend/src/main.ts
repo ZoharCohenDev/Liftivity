@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import { env } from "./config/env";
 import { authRoutes } from "./routes/auth";
+import { analysesRoutes } from "./routes/analyses";
 
 const app = Fastify({ logger: true });
 
@@ -19,6 +20,9 @@ app.get("/health", async () => ({ status: "ok", service: "api" }));
 
 // Auth routes: /auth/register, /auth/login, /auth/refresh, /auth/logout, /auth/me
 app.register(authRoutes);
+
+// Analyses routes: POST /api/analyses, GET /api/analyses/:id
+app.register(analysesRoutes);
 
 const start = async () => {
   await app.listen({ port: env.API_PORT, host: "0.0.0.0" });
