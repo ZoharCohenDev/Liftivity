@@ -1,56 +1,36 @@
 import React, { createContext, useContext, useState } from "react";
+import type { SiteView } from "@liftivity/shared-types";
 
-export interface Site {
-  id: string;
-  url: string;
-  score: number;
-  issues: number;
-  status: "Stable" | "Critical" | "Optimizing" | "Warning";
-  lastCrawl: string;
-}
+export type { SiteView };
 
 interface AppCtx {
   activePage: string;
   setActivePage: (p: string) => void;
-  sites: Site[];
-  user: { name: string; email: string; plan: string; avatar: string };
+  sites: SiteView[];
 }
 
-const mockSites: Site[] = [
-  { id: "1", url: "acme-corp.com", score: 84, issues: 12, status: "Stable", lastCrawl: "2 hours ago" },
-  { id: "2", url: "globex-digital.io", score: 47, issues: 48, status: "Critical", lastCrawl: "5 hours ago" },
-  { id: "3", url: "nebula-saas.com", score: 76, issues: 19, status: "Optimizing", lastCrawl: "1 day ago" },
-  { id: "4", url: "zenith-retail.co", score: 91, issues: 4, status: "Stable", lastCrawl: "2 days ago" },
-  { id: "5", url: "alpha-logistics.net", score: 59, issues: 31, status: "Warning", lastCrawl: "3 days ago" },
-];
+const AppCtx = createContext<AppCtx>(null as unknown as AppCtx);
 
-const AppCtx = createContext<AppCtx>({
-  activePage: "overview",
-  setActivePage: () => {},
-  sites: mockSites,
-  user: { name: "Sarah Jenkins", email: "sarah@acme.com", plan: "Pro Enterprise", avatar: "SJ" },
-});
+const mockSites: SiteView[] = [
+  { id: "1", name: "Acme Corp", url: "acme-corp.com", score: 84, issues: 12, status: "Stable", lastCrawledAt: "2 hours ago" },
+  { id: "2", name: "Globex Digital", url: "globex-digital.io", score: 47, issues: 48, status: "Critical", lastCrawledAt: "5 hours ago" },
+  { id: "3", name: "Nebula SaaS", url: "nebula-saas.com", score: 76, issues: 19, status: "Optimizing", lastCrawledAt: "1 day ago" },
+  { id: "4", name: "Zenith Retail", url: "zenith-retail.co", score: 91, issues: 4, status: "Stable", lastCrawledAt: "2 days ago" },
+  { id: "5", name: "Alpha Logistics", url: "alpha-logistics.net", score: 59, issues: 31, status: "Warning", lastCrawledAt: "3 days ago" },
+];
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [activePage, setActivePage] = useState("overview");
 
   return (
-    <AppCtx.Provider
-      value={{
-        activePage,
-        setActivePage,
-        sites: mockSites,
-        user: {
-          name: "Sarah Jenkins",
-          email: "sarah@acme.com",
-          plan: "Pro Enterprise",
-          avatar: "SJ",
-        },
-      }}
-    >
+    <AppCtx.Provider value={{ activePage, setActivePage, sites: mockSites }}>
       {children}
     </AppCtx.Provider>
   );
 }
 
-export const useApp = () => useContext(AppCtx);
+export const useApp = (): AppCtx => {
+  const ctx = useContext(AppCtx);
+  if (!ctx) throw new Error("useApp must be used inside AppProvider");
+  return ctx;
+};

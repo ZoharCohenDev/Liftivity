@@ -16,13 +16,18 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
 import AddIcon from "@mui/icons-material/Add";
-import { useThemeMode } from "../../context/ThemeContext";
-import { useApp } from "../../context/AppContext";
 import ThemeToggle from "../ThemeToggle";
+import { useAuth } from "../../context/AuthContext";
+
+function getInitials(displayName: string): string {
+  const parts = displayName.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 export default function TopBar() {
   const theme = useTheme();
-  const { user } = useApp();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const bg = theme.palette.mode === "dark" ? "#0F1827" : "#1A2235";
 
@@ -98,7 +103,7 @@ export default function TopBar() {
             cursor: "pointer",
           }}
         >
-          {user.avatar}
+          {user ? getInitials(user.displayName) : "?"}
         </Avatar>
       </Toolbar>
     </AppBar>

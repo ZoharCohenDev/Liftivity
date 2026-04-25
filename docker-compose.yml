@@ -5,19 +5,27 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: liftivity
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: liftivity_dev
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./infra/db/migrations:/docker-entrypoint-initdb.d
+      - ./infra/db/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U liftivity -d liftivity_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     ports:
       - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
 
   # ── Apps ──────────────────────────────────────────────────────────────────
   api:
@@ -31,8 +39,10 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
 
   worker:
     build:
@@ -85,3 +95,4 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:

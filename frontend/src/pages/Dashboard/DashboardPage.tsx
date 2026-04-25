@@ -1,13 +1,13 @@
 import React from "react";
-import { Box, Chip, Grid, Typography } from "@mui/material";
+import { Box, Grid, Typography } from "@mui/material";
 import StatCard from "../../components/StatCard";
 import ConversionChart from "./components/ConversionChart";
 import IssueBreakdownChart from "./components/IssueBreakdownChart";
 import RecentAnalysesTable from "./components/RecentAnalysesTable";
-import { useApp } from "../../context/AppContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function DashboardPage() {
-  const { user } = useApp();
+  const { user } = useAuth();
 
   return (
     <Box p={3}>
@@ -16,16 +16,7 @@ export default function DashboardPage() {
         <Box>
           <Typography variant="h5" fontWeight={700}>Overview</Typography>
           <Typography variant="body2" color="text.secondary">
-            Welcome back! Here is what's happening with your websites today.
-          </Typography>
-        </Box>
-        <Box textAlign="right">
-          <Typography variant="caption" color="text.secondary" display="block" letterSpacing={0.5}>
-            PLAN
-          </Typography>
-          <Typography variant="subtitle2" fontWeight={700}>{user.plan}</Typography>
-          <Typography variant="caption" color="primary.main" sx={{ cursor: "pointer" }}>
-            ↑ Access upgrades
+            Welcome back{user ? `, ${user.displayName}` : ""}! Here is what's happening with your websites today.
           </Typography>
         </Box>
       </Box>

@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // directUrl bypasses the Supabase connection pooler for migrations.
+  // Required when DATABASE_URL uses the pooler (?pgbouncer=true).
+  // Leave unset for local dev — Prisma will fall back to DATABASE_URL.
+  directUrl = env("DIRECT_URL")
+}
+
+// ── Enums ──────────────────────────────────────────────────────────────────
+
+enum AnalysisStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+// Tracks which stage of the pipeline the analysis is currently in.
+// Order: QUEUED → COLLECTOR → ANALYZER → MODEL → INTERPRETER → COMPLETED
+enum AnalysisStage {
+  QUEUED
+  COLLECTOR
+  ANALYZER
+  MODEL
+  INTERPRETER
+  COMPLETED
+}
+
+// ── Models ─────────────────────────────────────────────────────────────────
+
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique @db.VarChar(255)
+  displayName  String   @map("display_name") @db.VarChar(255)
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  projects Project[]
+
+  @@map("users")
+}
+
+model Project {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String   @db.VarChar(255)
+  url       String   @db.VarChar(2048)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses Analysis[]
+
+  @@map("projects")
+}
+
+model Analysis {
+  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  projectId    String         @map("project_id") @db.Uuid
+  url          String         @db.VarChar(2048)
+  status       AnalysisStatus @default(PENDING)
+  stage        AnalysisStage  @default(QUEUED)
+  progress     Int            @default(0)
+  errorCode    String?        @map("error_code") @db.VarChar(64)
+  errorMessage String?        @map("error_message")
+  createdAt    DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime       @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  project Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  result  AnalysisResult?
+
+  @@map("analyses")
+}
+
+// Populated only when status = COMPLETED.
+// categoryScores shape: { nlp?: number; performance?: number; dom?: number }
+// insights shape: string[]
+// rawFeatures shape: Record<string, unknown> — the full ML feature dict
+model AnalysisResult {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  analysisId     String   @unique @map("analysis_id") @db.Uuid
+  overallScore   Decimal  @map("overall_score") @db.Decimal(5, 2)
+  categoryScores Json     @map("category_scores")
+  rawFeatures    Json     @map("raw_features")
+  insights       Json
+  screenshotUrl  String?  @map("screenshot_url") @db.VarChar(2048)
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@map("analysis_results")
+}

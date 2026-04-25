@@ -1,16 +1,22 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import { env } from "./config/env";
 
 const app = Fastify({ logger: true });
 
-app.register(cors, { origin: process.env.WEB_URL ?? "*" });
+app.register(cors, {
+  origin: env.WEB_URL,
+  credentials: true,
+});
 
 // Health check — used by Docker and load-balancer probes
 app.get("/health", async () => ({ status: "ok", service: "api" }));
 
 const start = async () => {
-  const port = Number(process.env.API_PORT ?? 3000);
-  await app.listen({ port, host: "0.0.0.0" });
+  await app.listen({ port: env.API_PORT, host: "0.0.0.0" });
 };
 
-start();
+start().catch((err) => {
+  app.log.error(err);
+  process.exit(1);
+});

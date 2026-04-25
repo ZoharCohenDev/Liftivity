@@ -3,7 +3,12 @@
     "allow": [
       "Bash(pnpm *)",
       "Bash(docker compose *)",
-      "Bash(docker exec *)"
+      "Bash(docker exec *)",
+      "Bash(docker volume *)",
+      "Bash(DATABASE_URL=postgresql://liftivity:secret@localhost:5432/liftivity_dev npx prisma *)",
+      "Bash(npx prisma *)",
+      "Bash(grep -v \"^$\")",
+      "Bash(DATABASE_URL=postgresql://liftivity:secret@localhost:5432/liftivity_dev DIRECT_URL=postgresql://liftivity:secret@localhost:5432/liftivity_dev npx prisma migrate status)"
     ]
   }
 }

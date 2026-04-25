@@ -93,7 +93,7 @@ export default function RecentAnalysesTable() {
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2" color="text.secondary">
-                    {site.lastCrawl}
+                    {site.lastCrawledAt ?? "—"}
                   </Typography>
                 </TableCell>
                 <TableCell>

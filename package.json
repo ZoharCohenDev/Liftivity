@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "pnpm --filter frontend dev",
+    "dev": "pnpm --filter @liftivity/web dev",
     "build": "pnpm --filter './packages/*' build && pnpm --filter frontend build",
     "lint": "pnpm --recursive lint",
     "typecheck": "pnpm --recursive typecheck",

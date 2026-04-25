@@ -25,7 +25,19 @@ export default function NewAnalysisPage() {
   const isDark = theme.palette.mode === "dark";
   const navigate = useNavigate();
   const [url, setUrl] = useState("");
+  const [urlError, setUrlError] = useState("");
   const [depth, setDepth] = useState("quick");
+
+  const validateUrl = (value: string): string => {
+    if (!value.trim()) return "URL is required";
+    try {
+      const parsed = new URL(value.startsWith("http") ? value : `https://${value}`);
+      if (!["http:", "https:"].includes(parsed.protocol)) return "URL must use http or https";
+      return "";
+    } catch {
+      return "Please enter a valid URL";
+    }
+  };
 
   return (
     <Box p={3} maxWidth={760} mx="auto">
@@ -68,7 +80,12 @@ export default function NewAnalysisPage() {
           fullWidth
           placeholder="https://example.com"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          error={Boolean(urlError)}
+          helperText={urlError || " "}
+          onChange={(e) => {
+            setUrl(e.target.value);
+            if (urlError) setUrlError(validateUrl(e.target.value));
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -106,7 +123,11 @@ export default function NewAnalysisPage() {
           size="large"
           fullWidth
           endIcon={<ArrowForwardIcon />}
-          onClick={() => navigate("/app/analysis-progress")}
+          onClick={() => {
+            const err = validateUrl(url);
+            if (err) { setUrlError(err); return; }
+            navigate("/app/analysis-progress");
+          }}
           sx={{ mt: 3, py: 1.5, fontSize: 15 }}
         >
           Start Detailed Analysis

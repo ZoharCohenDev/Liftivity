@@ -83,6 +83,38 @@ docker-compose up --build
 
 This starts all services including the Python AI services. The frontend is served by nginx at `http://localhost:5173`.
 
+## Database migrations (Prisma)
+
+The schema lives in `backend/prisma/schema.prisma`. All commands run from `backend/`.
+
+```bash
+# Apply pending migrations to the database (local dev or Supabase)
+pnpm --filter @liftivity/api db:migrate:deploy
+
+# Generate Prisma Client after any schema change
+pnpm --filter @liftivity/api db:generate
+
+# Inspect current migration state
+DATABASE_URL=... DIRECT_URL=... npx prisma migrate status
+
+# Load dev seed data (requires psql or docker exec)
+docker exec -i liftivity-postgres-1 psql -U liftivity -d liftivity_dev \
+  < infra/db/seeds/seed_dev.sql
+
+# Open Prisma Studio (visual DB browser)
+pnpm --filter @liftivity/api db:studio
+```
+
+### Using Supabase
+
+1. Get your connection strings from **Supabase → Settings → Database → Connection string**.
+2. In your `.env`, set:
+   - `DATABASE_URL` → **Transaction Pooler** URL (port 6543, append `?pgbouncer=true&connection_limit=1`)
+   - `DIRECT_URL` → **Direct connection** URL (port 5432, used by `prisma migrate` only)
+3. Run `pnpm --filter @liftivity/api db:migrate:deploy` to apply migrations.
+
+See `.env.example` for the exact format.
+
 ## Useful commands
 
 ```bash
@@ -91,7 +123,7 @@ pnpm lint               # lint all packages
 pnpm --filter @liftivity/api build       # build the API
 pnpm --filter @liftivity/worker build    # build the worker
 pnpm --filter @liftivity/web build       # build the frontend
-docker-compose down -v  # stop infra and remove volumes
+docker compose down -v  # stop infra and remove volumes
 ```
 
 ## Environment variables
