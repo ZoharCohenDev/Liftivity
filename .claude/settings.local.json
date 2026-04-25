@@ -6,16 +6,6 @@
       "Bash(python3 -m json.tool)"
     ]
   },
-  "env": {
-    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api/v1",
-    "ANTHROPIC_API_KEY": "$OPENROUTER_API_KEY",
-
-    "ANTHROPIC_MODEL": "google/gemma-4-26b-a4b-it:free",
-    
-    "ANTHROPIC_CUSTOM_MODEL_OPTION": "nvidia/nemotron-3-super-120b-a12b:free",
-    "ANTHROPIC_CUSTOM_MODEL_OPTION_NAME": "Nemotron Free",
-    "ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION": "Nvidia Nemotron 120B free model"
-},
   "hooks": {
     "PreToolUse": [
       {
