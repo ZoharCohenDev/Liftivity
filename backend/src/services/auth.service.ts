@@ -85,6 +85,45 @@ export async function getMe(userId: string): Promise<User> {
   return toPublicUser(dbUser);
 }
 
+export async function deleteAccount(userId: string): Promise<void> {
+  // Cascade in schema handles RefreshTokens → Projects → Analyses → AnalysisResults.
+  await db.user.delete({ where: { id: userId } });
+}
+
+export async function changePassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  const dbUser = await db.user.findUnique({ where: { id: userId } });
+  if (!dbUser) {
+    throw Object.assign(new Error("User not found"), { code: "NOT_FOUND" });
+  }
+
+  const valid = await bcrypt.compare(currentPassword, dbUser.passwordHash);
+  if (!valid) {
+    throw Object.assign(new Error("Current password is incorrect"), { code: "INVALID_CREDENTIALS" });
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+
+  // Handle the race condition where the user is deleted between the findUnique and this update.
+  try {
+    await db.user.update({ where: { id: userId }, data: { passwordHash } });
+  } catch (err: unknown) {
+    if ((err as { code?: string }).code === "P2025") {
+      throw Object.assign(new Error("User not found"), { code: "NOT_FOUND" });
+    }
+    throw err;
+  }
+
+  // Revoke all active sessions so compromised tokens can't be used after a password change.
+  await db.refreshToken.updateMany({
+    where: { userId, revokedAt: null },
+    data: { revokedAt: new Date() },
+  });
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 async function issueTokens(dbUser: {

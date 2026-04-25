@@ -109,10 +109,16 @@ export interface PaginatedResponse<T> {
   pageSize: number;
 }
 
+// ── Queue constants ────────────────────────────────────────────────────────
+
+/** Single source of truth for the BullMQ queue name used by API and worker. */
+export const ANALYSIS_QUEUE_NAME = "liftivity-analysis";
+
 // ── Job payloads (BullMQ) ──────────────────────────────────────────────────
 
 export interface AnalysisJobPayload {
   analysisId: string;
   projectId: string;
   url: string;
+  userId?: string;
 }

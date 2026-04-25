@@ -1,10 +1,8 @@
 #!/bin/bash
 # Post-Edit Hook — runs after Claude edits any file
-# Runs Prettier, validates output, and logs the change
+# Runs Prettier, validates output, logs changes, and reminds about Postman when API endpoints change
 
 FILE_PATH="$1"
-
-# ─── File type detection ──────────────────────────────────────────────────────
 
 IS_TS=false
 IS_PY=false
@@ -27,7 +25,6 @@ if $IS_TS; then
     echo "  This may indicate a syntax error in the file."
     echo "  Please review before continuing."
     echo ""
-    # Warn but don't block — Claude should see the issue
     exit 0
   fi
 
@@ -53,6 +50,36 @@ if $IS_PY; then
   fi
 
   echo "[post-edit] ✅ Python syntax OK: $FILE_PATH"
+fi
+
+# ─── API endpoint reminder for Postman ────────────────────────────────────────
+
+if $IS_TS; then
+  if grep -Eq "(fastify\.(get|post|put|patch|delete)|router\.(get|post|put|patch|delete)|app\.(get|post|put|patch|delete))" "$FILE_PATH"; then
+    echo ""
+    echo "╔════════════════════════════════════════════════════╗"
+    echo "║     📮 API ENDPOINT DETECTED — UPDATE POSTMAN      ║"
+    echo "╚════════════════════════════════════════════════════╝"
+    echo ""
+    echo "  Claude edited a file that appears to define API endpoints:"
+    echo "  $FILE_PATH"
+    echo ""
+    echo "  Please add/update the matching request in Postman:"
+    echo ""
+    echo "  1. Create or update a request in the Liftivity collection"
+    echo "  2. Set the correct HTTP method: GET / POST / PUT / PATCH / DELETE"
+    echo "  3. Set the URL, for example:"
+    echo "     {{API_BASE_URL}}/api/analyses"
+    echo ""
+    echo "  4. If protected, add Authorization:"
+    echo "     Bearer {{accessToken}}"
+    echo ""
+    echo "  5. Add body example if needed:"
+    echo "     { \"url\": \"https://example.com\" }"
+    echo ""
+    echo "  6. Add a Tests script if the endpoint returns tokens or IDs"
+    echo ""
+  fi
 fi
 
 # ─── Log the edit ─────────────────────────────────────────────────────────────

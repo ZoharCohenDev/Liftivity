@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pnpm *)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -m json.tool)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
@@ -27,9 +34,13 @@
       }
     ]
   },
-  "permissions": {
-    "allow": [
-      "Bash(pnpm *)"
-    ]
+  "mcpServers": {
+    "postman": {
+      "type": "url",
+      "url": "https://mcp.postman.com/mcp/v1",
+      "headers": {
+        "x-api-key": "$POSTMAN_API_KEY"
+      }
+    }
   }
 }

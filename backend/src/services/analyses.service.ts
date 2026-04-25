@@ -1,4 +1,5 @@
 import { db } from "../lib/db";
+import { enqueueAnalysis } from "../lib/queue";
 import type { Analysis } from "@liftivity/shared-types";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -25,7 +26,12 @@ export async function createAnalysis(
   let project = await db.project.findFirst({ where: { userId, url } });
 
   if (!project) {
-    const hostname = new URL(url).hostname;
+    let hostname: string;
+    try {
+      hostname = new URL(url).hostname;
+    } catch {
+      throw Object.assign(new Error("Invalid URL"), { code: "INVALID_URL" });
+    }
     project = await db.project.create({
       data: { userId, url, name: hostname },
     });
@@ -39,13 +45,12 @@ export async function createAnalysis(
     },
   });
 
-  // TODO: enqueue analysis job to BullMQ so the worker can pick it up
-  // import { analysisQueue } from "../lib/queue";
-  // await analysisQueue.add("run-analysis", {
-  //   analysisId: analysis.id,
-  //   projectId:  project.id,
-  //   url,
-  // });
+  await enqueueAnalysis({
+    analysisId: analysis.id,
+    projectId: project.id,
+    url,
+    userId,
+  });
 
   return { analysisId: analysis.id, status: "PENDING" };
 }

@@ -5,12 +5,16 @@ import {
   refreshHandler,
   logoutHandler,
   getMeHandler,
+  changePasswordHandler,
+  deleteAccountHandler,
 } from "../controllers/auth.controller";
 
 export async function authRoutes(app: FastifyInstance): Promise<void> {
-  app.post("/auth/register", registerHandler);
-  app.post("/auth/login",    loginHandler);
-  app.post("/auth/refresh",  refreshHandler);
-  app.post("/auth/logout",   logoutHandler);
-  app.get( "/auth/me",       getMeHandler);
+  app.post(  "/auth/register",      registerHandler);
+  app.post(  "/auth/login",         loginHandler);
+  app.post(  "/auth/refresh",       refreshHandler);
+  app.post(  "/auth/logout",        logoutHandler);
+  app.get(   "/auth/me",            getMeHandler);
+  app.patch( "/auth/me/password",   changePasswordHandler);
+  app.delete("/auth/me",            deleteAccountHandler);
 }

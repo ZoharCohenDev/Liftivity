@@ -26,9 +26,15 @@ importers:
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
+      bullmq:
+        specifier: ^5.7.0
+        version: 5.76.1
       fastify:
         specifier: ^4.27.0
         version: 4.29.1
+      ioredis:
+        specifier: ^5.3.2
+        version: 5.10.1
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
@@ -158,12 +164,18 @@ importers:
 
   worker:
     dependencies:
+      '@prisma/client':
+        specifier: ^5.14.0
+        version: 5.22.0(prisma@5.22.0)
       bullmq:
         specifier: ^5.7.0
         version: 5.76.1
       ioredis:
         specifier: ^5.3.2
         version: 5.10.1
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
     devDependencies:
       '@liftivity/config':
         specifier: workspace:*
@@ -177,6 +189,9 @@ importers:
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0
+      prisma:
+        specifier: ^5.14.0
+        version: 5.22.0
       ts-node-dev:
         specifier: ^2.0.0
         version: 2.0.0(@types/node@20.19.39)(typescript@5.9.3)
