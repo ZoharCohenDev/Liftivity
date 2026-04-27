@@ -1,1 +1,0 @@
-# scoring-service application package

@@ -1,1 +1,0 @@
-# cv-service application package
